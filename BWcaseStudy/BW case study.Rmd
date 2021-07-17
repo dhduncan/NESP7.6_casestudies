@@ -1,0 +1,465 @@
+---
+title: 'Building evidence based management of herbivore threats in TECs: a case study in semi-arid woodlands'
+author: "David Duncan, Javiera Olivares Rojas, Peter Vesk"
+date: "29/06/2021"
+output:
+  html_document:
+    code_folding: hide
+subtitle: NESP 7.6
+bibliography: references.bib  
+csl: journal-of-applied-ecology.csl 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=FALSE)
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+library(flextable)
+
+# small_border <- officer::fp_border(color = "gray", width = 1)
+# big_border = officer::fp_border(color="black", width = 2)
+```
+
+
+# Most important audience? 
+This work is intended for conservation managers, agencies who are tasked with the conservation of threatened species and ecological communities, and researchers and other experts who work on threatened species and ecological communities in Recovery Teams or other research endeavours.
+
+It may also be of interest to those who work in policy for invasive species and management of overabundant native herbivores.
+ 
+# Background
+This work grew out of our NESP1.2.2 investigation of persistent regeneration failure in the Endangered Buloke Woodlands of the Riverina and Murray-Darling Depression Bioregions.  Parks Victoria has been working to restore these semi-arid woodlands for half a century, primarily by management of vertebrate herbivores that limit recruitment and maintain the community in a degraded stable state [@murdoch2006, @cheal2011]. Management of the combined grazing pressure from livestock, rabbits, hares, goats, deer and the western grey kangaroo has been Parks Victoria's longest running management campaign anywhere  [@taylor2016].  We proposed to reflect on our buloke woodlands case study as one where managers have obtained at least an empirical foothold on their herbivore threat problem. What lessons might this case hold for the management response to the many other Threatened Ecological Communities for which one or more herbivore threats are recognised?  
+
+After habitat destruction -- the essential backdrop to the majority of threatened species' and ecological communities' status -- invasive pest species (herbivores and predators) are among the most pervasive threat to those species [@kearney2019] and communities [Olivares Rojas unpubl.]. They represent an enormous cost to the Australian economy in terms of damage to agricultural production, but also mitigation and population control itself [@mcleod2016]. In some circumstances - like the buloke woodlands - native herbivores can also be a large part of the herbivore threat.  Identification and justification of herbivore threats in Listings and Recovery Plans are essential steps to resource and direct threat mitigation efforts.  But what further evidence is required for management agencies to gain an empirical if not adaptive foothold in managing multiple herbivore threats to threatened species and ecological communities? 
+
+Clear management objectives with measurable targets are essential to evidence based native vegetation management and conservation [@salafsky2002, @duncan2008], and these must be developed in order for identification of cost-effective management. Management objectives should be defined with a range of stakeholder inputs, though ecological research and evidence may play a useful role in the development. For cost-effective herbivore management, objectives and linked targets need to be framed in such a way that those allocating management resources can estimate for a given species or ecological community what kind of intervention, and how much of it, is required to achieve the management objective [e.g., density impact functions @yokomizo2009, @norbury2015, effort-outcomes relationship @hone2017]. Globally, however, few such models have been developed to date [@norbury2015]. 
+
+Here we examine the development of the knowledge base that informs herbivore management for semi-arid buloke woodlands, a nationally Endangered Ecological Community, and whose largest remnants are located in mallee national parks in Victoria. Managers and researchers have been striving to understand the dynamics of the threatening herbivore species and their impact on the TEC, and eager to understand whether their efforts to intervene in favour of buloke woodlands are effective. To help provide perspective on the research and other empirical imputs to these examples, we borrow from published typologies of evidence and its use in to conservation management [@cook2012, @salafsky2019]. 
+
+# Main aim of the research – Max 100 words
+We performed a review of empirical 'inputs' that had contributed to Parks Victoria gaining an empirical if not adaptive foothold in managing multiple herbivore threats to TECs. We looked 
+
+A range of types of evidence could contribute to help conservation practitioners address three fundamental questions [@salafsky2002]:
+(1) "What should our goals be and how do we measure progress in reaching them?", which is an accessible paraphrasing of the SMART target idea; (2) "How can we most effectively take action to achieve conservation?"; and (3) "How can we do conservation better?" 
+
+Our intention was to extract insights that may help managers efficiently chart a course towards the kind of knowledge basis they need to cost-effectively manage herbivore threats to conservation of threatened ecological communities. 
+
+## What you did
+
+We reviewed history of the development of the evidence and knowledge base that supports herbivore management in our two case studies. Our scope included projects or processes that contributed to the development of objectives, and projects and processes that contributed to the managers getting a handle on herbivore population dynamics, and the relationship between those dynamics and the conservation objectives. 
+
+We constructed a typology of evidence that joined and extended two existing approaches; Salafsky et al's [-@salafsky2019] typology of evidence used in conservation practice and Cook et al's [-@cook2012] Table 3 labels for types of evidence that NSW and Victorian protected area managers considered useful for making decisions about biodiversity management. We added categories for statement or restatement of objectives, where those processes did not correspond to published strategic document, and also interventions, which are a vital part of the accumulated evidence and experience.
+
+```{r table of evidence,  ft.align = "left", tab.cap = "Typology applied to the accumulated evidence and experience of managing herbivore threats to semi-arid woodlands in the Victorian mallee (middle column), and its relation to Salafsky et al's 2019 typology of evidence for conservation management, and Cook et al's 2012 (Table 3) summary of types of evidence that park managers find use in decision making." }
+tab1 <- read_csv("TGM events timeline.csv") |> 
+  select(salafsky2019, dd_mashup, cook2012table3) |> 
+  mutate(dd_mashup = factor(dd_mashup,
+                            levels = c("inventory", 
+                                       "condition assessments",
+                                       "monitoring", 
+                                       "primary studies",
+                                       "review/synth/dss",
+                                       "principles/theory", 
+                                       "objective setting",
+                                       "management plan",
+                                       "legislation",
+                                       "intervention"),
+                            ordered = TRUE)) |> 
+  arrange(dd_mashup, cook2012table3) |> 
+  distinct()
+
+regulartable(tab1) %>% 
+  colformat_double(big.mark = "", digits = 0) %>%
+  # border_inner(border = small_border) |> 
+  # border_outer(border = big_border) |> 
+  merge_v(j = ~ dd_mashup + cook2012table3 + salafsky2019) |> 
+  theme_box() |> 
+  autofit()
+
+```
+
+
+To do this we sourced published and unpublished documents, and consulted with people retaining institutional knowledge of other events that may have played important or catalytic roles.  
+
+The review was relatively comprehensive in the case of buloke woodlands, and we cross-checked the picture of development of herbivore management from the buloke woodlands with that of the grassy TECs in the ACT, where similar resources had been gathered together and reviewed previously (Mel Snape pers. comm **or coauthor would be better**)
+
+
+```{r table of herbivores and frequency as threat}
+# Table - herbivore species and their status
+```
+
+```{r Data cleaning and manipulation, eval=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+
+setwd("~pCloud Drive/R/7.6_TEC_threats/BWcaseStudy")
+
+data <- read_csv("BWcaseStudy/TGM events timeline.csv")
+
+flextable::regulartable(data) %>% flextable::colformat_double(big.mark = "", digits = 0) %>% flextable::autofit()
+
+# make multi-line labels for facets, width is n characters
+events <- data %>%
+  mutate(multi_line_loc = stringr::str_wrap(location, width = 10),
+         event_name = stringr::str_wrap(event_name, width = 15),
+         focus_name = stringr::str_wrap(focus, width = 10),
+         general_type = textclean::mgsub(general_type, "administration", "policy")
+         ) 
+
+events <- events %>%
+  mutate(groups = if_else(is.na(groups), "ungrouped", groups),
+         multi_line_loc = if_else(multi_line_loc == "Mallee\nParks", "All Parks", multi_line_loc)) %>%
+  group_by(year, location) %>%
+  mutate(year_jitter = year + (purrr::rdunif(n(), 5, -5) / 10) * (n() > 1),
+         event_name = if_else(is.na(event_name), "other", event_name),
+         general_type = if_else(is.na(general_type), "other", general_type),
+         type = if_else(is.na(type), "other", type)) %>%
+  view()
+
+years <- min(events$year):max(events$year)
+
+locations <- unique(events$multi_line_loc)
+
+rabbits_df <- tibble(year = rep(years, 3),
+       pop_size = rpois(length(year), 100),
+       multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+  view()
+
+roos_df <- tibble(year = rep(years, 3),
+       pop_size = rpois(length(year), 50),
+       multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+  view()
+
+```
+
+```{r real data, echo=FALSE}
+library(lubridate)
+
+rabbit_tidy <- readRDS("~/pCloudDrive/R/Wyperfeld_NESP/rabbits/data/generated/rabbit_tidy.rds") |>
+  filter(Target == "Rabbit") |> 
+  mutate(yr = year(Date),
+         yr_qr = round_date(Date, "quarter"))
+
+rabbit_trans <- rabbit_tidy |> 
+  group_by(Region, Target, yr, Transect) |>
+  summarise(n = n(),
+            mean_count = round(mean(Count, na.rm = TRUE), 2))
+  
+rabbit_yr <- select(rabbit_trans, -Transect) |> 
+  summarise(m_count = mean(mean_count))
+
+hk_rabs <- ungroup(rabbit_yr) |> 
+  filter(Region %in% "Hattah Kulkyne") |> 
+  transmute(multi_line_loc = "Hattah-\nKulkyne",
+                  year = yr,
+                  pop_size = m_count)
+
+```
+
+``` {r theme duncan}
+#choose a colour for the facet panels
+facet_clr <- ochRe::ochre_palettes$tasmania[7] #dark green
+
+theme_duncan <- function () {
+    theme_linedraw() %+replace% 
+    theme(
+      panel.grid.minor.x=element_blank(), 
+      panel.grid.major.x=element_blank(),
+      legend.position = "bottom", 
+      legend.title=element_blank(), 
+      axis.ticks.y = element_blank(), 
+      axis.title.x = element_blank(), 
+      strip.text.y = element_text(angle = 0),
+      strip.text = element_text(colour = "white"),
+      strip.background = element_rect(fill = facet_clr, colour = facet_clr),
+      panel.border = element_rect(fill = NA, colour = facet_clr) 
+      )
+}
+```
+
+## What we found
+```{r}
+data <- read_csv("TGM events timeline.csv")
+```
+
+### Buloke Woodlands of the Riverina and Murray-Darling Depression Bioregions
+
+We identified `r nrow(data)` documents, datasets or operations processes spanning the period 1970--2020. The table and timeline of elements (Fig. 1) are overwhelming, but that in itself is part of the result of our review. The road toward an evidence base for restoring the semi-arid woodlands has been long indeed, and a many people have been part of the journey.  
+
+```{r plot 13, fig.width=8.25, fig.height=11.75, fig.cap= "Figure 1 Development of knowledge for evidence based approach to managing herbivore impacts on endangered Buloke Woodlands in Victoria's mallee parks. Vertical pins indicate release dates of documents, or start dates of interventions. Ribbons indicate time periods, like annual herbivore population monitoring."}
+
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+
+
+data <- read_csv("TGM events timeline.csv") |> 
+  filter(focus != "goat")
+
+# clrs <- ochRe::ochre_palettes$tasmania
+clrs <- ochRe::ochre_palettes$mccrea
+# manipulate dataset ----
+
+# make multi-line labels for facets, width is n characters
+events <- data %>%
+  mutate(multi_line_loc = stringr::str_wrap(location, width = 10),
+         event_name = stringr::str_wrap(event_name, width = 25),
+         focus_name = stringr::str_wrap(focus, width = 10),
+         general_type = textclean::mgsub(general_type, "administration", "policy"),
+         label_number = 1:nrow(.))
+
+events <- events %>%
+  mutate(groups = if_else(is.na(groups), "ungrouped", groups),
+         multi_line_loc = if_else(multi_line_loc == "Mallee\nParks", "All Parks", multi_line_loc)) %>%
+  group_by(year, location) %>%
+  mutate(year_jitter = year + (purrr::rdunif(n(), 5, -5) / 10) * (n() > 1),
+         event_name = if_else(is.na(event_name), "other", event_name),
+         general_type = if_else(is.na(general_type), "other", general_type),
+         type = if_else(is.na(type), "other", type))
+  
+events <- events %>%  
+  rowwise() %>%
+  mutate(colour = clrs[grep(dd_mashup, unique(events$dd_mashup))])# %>%
+#  view()
+
+# fake data ----
+
+# years <- min(events$year):max(events$year)
+# 
+# locations <- unique(events$multi_line_loc)
+# 
+# rabbits_df <- tibble(year = rep(years, 3),
+#                      pop_size = rpois(length(year), 100),
+#                      multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+#   view()
+# 
+# roos_df <- tibble(year = rep(years, 3),
+#                   pop_size = rpois(length(year), 50),
+#                   multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+#   view()
+
+
+# assemble groups for emphasis ----
+
+groups_to_emphasise <- c("wnp kangaroo", "mallee rabbit")
+emphasis <- c("H")
+pin_size_small <- 0.9
+pin_size_large <- 1.2
+more_transparent <- 0.8
+less_transparent <- 1
+
+events_grouped <- events %>%
+  mutate(groups = if_else(impact %in% emphasis, impact, "ungrouped"),
+         # re-level locations to appear in order corresponding to pop data
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne",
+                                            "Murray\nSunset",
+                                            "Wyperfeld", "All Parks",
+                                            "Global")
+                                 ),
+         # size of segments, points
+         size = if_else(groups == "ungrouped", pin_size_small, pin_size_large),
+         # transparency of segments, points
+         alpha = if_else(groups == "ungrouped", more_transparent, less_transparent), 
+         # basic labels for management and research, others unlabelled 
+         plot_labels = case_when(
+           #groups == "ungrouped" & general_type == "management" ~ type, 
+           #groups == "ungrouped" & general_type == "research" ~ type,
+           groups == "ungrouped" ~ as.character(label_number),
+           groups != "ungrouped" ~ event_name,
+           TRUE ~ ""))  #%>%
+#view()
+
+# rabbits <- rabbits_df %>%
+#   mutate(focus = "rabbit", 
+#          multi_line_loc = factor(multi_line_loc, 
+#                                  levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+#                                             "Wyperfeld")),
+#          pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+#          pop_graph = (pop_stand - 0.5)/1.5 + as.numeric(multi_line_loc)) %>%
+#   view()
+# 
+# roos <- roos_df %>%
+#   mutate(focus = "kangaroo", 
+#          multi_line_loc = factor(multi_line_loc, 
+#                                  levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+#                                             "Wyperfeld")),
+#          # standardised pop size
+#          pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)), 
+#          # shifted to sit at correct y-level, and shrunk so as to not bump into each other
+#          pop_graph = (pop_stand - 0.5)/1.5 + as.numeric(multi_line_loc)) %>% 
+#  view()
+
+
+# data for period rectangles ----
+
+# don't have to include every focus
+foci <- c("semi-arid\nwoodlands", "livestock",
+          "rabbit", "kangaroo")
+# same period for each focus here, can make them different
+yr_start <- 2000
+yr_end <- 2010
+
+rects_df <- tibble(focus_name = foci, 
+                   xmin = case_when(foci == "livestock" ~ 1972,
+                                    foci == "rabbit" ~  1986,
+                                    foci == "kangaroo" ~ 1983,
+                                    TRUE ~ yr_start), 
+                   xmax = case_when(foci == "livestock" ~ 1995,
+                                    foci == "rabbit" ~ 1996,
+                                    foci == "kangaroo" ~ 1990,
+                                    TRUE ~ yr_end), 
+                   ymin = rep(0, length(foci)), 
+                   ymax = rep(Inf, length(foci)))
+
+
+# plot it! ----
+
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_manual(values=clrs) +
+  theme_duncan() +
+  geom_rect(data = rects_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "grey", alpha = 0.3) +
+  # geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+  #           size = 0.3, linetype = "dotted") +
+  # geom_line(data = roos, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+  #           size = 0.3, linetype = "dotted") +
+  geom_segment(data = events_grouped, 
+               aes(x = year_jitter, y = 0, 
+                   xend = year_jitter, yend = multi_line_loc,
+                   color = dd_mashup), size = events_grouped$size * 0.7,
+               alpha = events_grouped$alpha) +
+  geom_point(data = events_grouped, 
+             aes(x = year_jitter, y = multi_line_loc, color = dd_mashup),
+             size = events_grouped$size, alpha = events_grouped$alpha) +
+  geom_rect(data = events_grouped, 
+            aes(xmin = year_jitter, 
+                xmax = year_jitter + duration,
+                ymin = as.numeric(multi_line_loc) - 0.05,
+                ymax = as.numeric(multi_line_loc) + 0.05,
+                fill = dd_mashup),
+            alpha = 0.4) +
+  geom_label_repel(data = events_grouped, 
+                   aes(label = plot_labels, x = year_jitter, 
+                       y = multi_line_loc),
+                   label.size = 0, label.padding = 0.05,
+                   size = events_grouped$size * 1.7, 
+                   fill = alpha(c("white"), 0.7),
+                   max.time = 1, max.iter = 50000, force = 10) +
+  # re-order focus to how want it to appear in plot
+  facet_grid(factor(focus_name, levels = c( "livestock", 
+                                            "semi-arid\nwoodlands",
+                                            "rabbit", "kangaroo")) ~ ., 
+             scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+The threat that multiple herbivores posed to the restoration of semi-arid woodlands in Victoria was recognised by the Land Conservation Council (LCC) in their investigation of public land use in the Mallee region 1972--1977 [@lcc1977]. The LCC report recognised the deficiency in information base about the Mallee ecosystems, flora and fauna, and highlighted the complex problem of _combined_ grazing pressure from livestock, rabbits, hares goats and kangaroos and its impact on the degraded semi-arid woodlands in particular. 
+
+Surveys of rabbits at quarterly or higher frequency had already begun in 1970 at Pine Plains, Wyperfeld NP, though that activity was not motivated by semi-arid woodland restoration, but rather private land production interests [@shepherd1978]
+
+The LCC called for field studies, and their review of public land use a decade later [@lcc1989] was in a much better position to recommend the termination of livestock grazing leases. They argued, supported by field data and site visits,  that no constant livestock grazing pressure was compatible with the restoration objective. The cessation of livestock grazing rights obviated the need to develop a density or regime-impact understanding for livestock, but  many questions about density-impact story for the various unmanaged herbivores remained.  One herbivore threat down, five to go.
+
+## Semi-arid woodlands
+Restoration objectives that could inform the impact side of a density-impact understanding were first 
+
+
+
+
+## European rabbit
+Estimation of rabbit densities via spotlight surveys commenced at Wyperfeld in 1970 because scientists chose the location to trial new strains and vectors of  myxomatosis that might improve its effectiveness in semi-arid environments [@shepherd1978]. That work was motivated by productivity improvements on private land; primary research concerned with impact of rabbit densities on semi-arid woodland restoration wouldn't occur in the Mallee parks until decades later.    
+
+Rabbit surveys stopped in the mid-1980s, but were restarted again as part of a national impact study after the Rabbit Haemoraghic Disease (RHD) was released onto the Australia mainland in late 1995 [@cooke2002].  This time, although RHD was maintaining rabbits in semi-arid areas at densities an order of magnitude lower than in the early 1970s, spotlight surveys were continued. Consequently, managers were able to detect and respond to an increase in rabbit densities in the 2000s [@murdoch2007, @sullivan2011].
+
+For all the rabbit survey and control effort undertaken in the Mallee parks, the understanding about density-impact relationships were extrapolated from a developing body of work undertaken in semi-arid woodland and coastal scrub sites in South Australia [@mutze2016, @bird2012]. 
+
+
+## Western grey kangaroo
+
+
+
+Cost effectiveness studies of monitoring approaches [e.g., @moloney2014], but not so much of management options
+
+
+## Goat, Deer, rogue cattle
+
+
+
+The elements of a quantitative understanding of density of herbivores and their impact on the ecosystem begin in Wyperfeld central with 
+
+Some elements have been constant, others have waxed and waned. 
+
+Vegetation condition monitoring began in Hattah-Kulkyne in 1980 and ran annually for seven years. 
+
+     
+
+
+
+# What does this mean?
+
+
+
+
+
+
+There are many ways to look at this case study.  Dogged, persistent, always mostly empirical, but only mostly. Rested on laurels when Myxoma decimated rabbit populations, and there was no vegetation monitoring. 
+
+With hindsight it is easy to look at this timeline in its entirety and wonder how so much monitoring and research has occurred without having clearly established density-impact relationships to guide herbivore management.  Could parks managers have allocated resources differently to prioritise the establishment of robust understanding of the link between herbivore densities and their impact on the restoration objectives?  Did they have the resources and institutional support to pursue that understanding?  Parks Management in the region reportedly viewed the designation of more parks with trepidation as they were poorly resourced to take on additional management responsibilities  [@clode2006]. 
+
+Links to Wintle et al [-@wintle2019] argument about spending.
+
+This case study contains both standard cost-effectiveness considerations, where resource allocation to herbivore control efforts need to be justified by their impact on the management objectives, but also social-license considerations, where a control measure like destruction of kangaroos that generates public outrage (a political cost) has to be justified by its impact on the management objectives.
+
+In the case of a feral herbivore like the European rabbit, there is relatively little debate about the need for control or the application of control measures. In the case of kangaroo control, the additional scrutiny requires a higher standard of evidence about the density-impact relationship. In the Mallee Parks this has meant annual surveys to estimate population size, which are compared against targets to decide if control is warranted, and if so how much.
+
+With the destructive potential of European rabbit firmly established in the national psyche, 
+
+It is critical to take 
+Essential to have an evidence base
+
+
+# Implications for target audience
+
+Who are these findings most important to? 
+
+### Transparency
+
+
+### Forgetting more than we ever knew?
+
+
+### Types of monitoring
+[@nichols2006]
+
+
+
+
+# How can they be applied?
+
+
+
+# Implications
+
+From recognition to cost-effective management of herbivore threats
+  
+# Recommendations
+
+
+
+
+
+# Acknowledgments
+We thank Parks Victoria staff John Wright, Lorraine Taylor, Matt Baker, Brendan Rodgers, Kathryn Schneider and Phil Pegler, Graeme Coulson, for sharing institutional knowledge, data and reports. 
+
+Rebecca Groenewegen developed the code to translate our database of events and publications into smart, updateable, timeline graphics. 
+
+# For further information contact:
+David Duncan, University of Melbourne, david.duncan@unimelb.edu.au
+
+# Cited material

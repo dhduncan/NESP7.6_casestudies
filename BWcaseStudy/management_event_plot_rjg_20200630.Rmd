@@ -1,0 +1,1054 @@
+---
+title: "Duncan Management Event Graph"
+author: "Rebecca Groenewegen"
+date: "10/06/2021"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=FALSE)
+```
+
+## Questions
+
+One event says "Murray Sunset NP Ecological Rationale Control program commenced in Wyperfeld NP (Pine Plains)", would you like to add it's implementation in MSNP in?  
+What are the "types" for:  
+
+-  LCC Mallee (destocking for now)  
+-  WNP Ecological Rationale (rationale for now)  
+-  Sandell sabbatical - Victoria's Rangelands: in Recovery or Transition? (report for now)  
+
+# Data cleaning and manipulation
+
+```{r}
+############
+### load ###
+############
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+
+data <- read_csv("TGM events timeline - Sheet1 rjg.csv")
+
+#############
+### table ###
+#############
+
+flextable::regulartable(data) %>% flextable::colformat_double(big.mark = "", digits = 0) %>% flextable::autofit()
+
+##################
+### manipulate ###
+##################
+
+# make multi-line labels for facets, width is n characters
+events <- data %>%
+  mutate(multi_line_loc = stringr::str_wrap(location, width = 10),
+         event_name = stringr::str_wrap(event_name, width = 15),
+         focus_name = stringr::str_wrap(focus, width = 10),
+         general_type = textclean::mgsub(general_type, "administration", "policy")
+         ) 
+
+events <- events %>%
+  mutate(groups = if_else(is.na(groups), "ungrouped", groups),
+         multi_line_loc = if_else(multi_line_loc == "Mallee\nParks", "All Parks", multi_line_loc)) %>%
+  group_by(year, location) %>%
+  mutate(year_jitter = year + (purrr::rdunif(n(), 5, -5) / 10) * (n() > 1),
+         event_name = if_else(is.na(event_name), "other", event_name),
+         general_type = if_else(is.na(general_type), "other", general_type),
+         type = if_else(is.na(type), "other", type)) %>%
+  view()
+
+##################
+### Dummy Data ###
+##################
+
+years <- min(events$year):max(events$year)
+
+locations <- unique(events$multi_line_loc)
+
+rabbits_df <- tibble(year = rep(years, 3),
+       pop_size = rpois(length(year), 100),
+       multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+  view()
+
+roos_df <- tibble(year = rep(years, 3),
+       pop_size = rpois(length(year), 50),
+       multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+  view()
+
+
+
+```
+
+# Plotting 
+
+## Plots Day 1
+
+I've set focus as a categorical y-axis here:
+
+-  allows tracking of research outputs from monitoring/control efforts
+-  can adjust change what these are or what is listed
+  - SAW: semi-arid woodland - restoration can go in here
+  - group them
+-  might be nice to add a distinction between species-specific and broader categories
+
+Labels are currently very basic, what would you ideally like displayed here?
+(I'll have more room for this once I learn how to stretch the graph)
+
+-  paper authors/themes?
+-  management details, i.e. type of control/monitoring?
+-  etc
+
+
+### Plot 1
+
+```{r}
+############
+### plot ###
+############
+
+ggplot() +
+  scale_y_discrete() +
+  geom_segment(data = events, mapping = aes(x = year, y = 0, xend = year, yend = focus,
+                                            color = general_type)) +
+  geom_point(data = events, mapping = aes(x = year, y = focus, color = general_type)) +
+  geom_label_repel(data = events, mapping = aes(label = type, x = year, y = focus),
+                   label.size = 0, size = 2, box.padding = 0.1) +
+  facet_grid(multi_line_loc ~ ., scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+### Plot 2
+
+```{r}
+############
+### plot ###
+############
+
+ggplot() +
+  scale_y_discrete() +
+  theme_light() +
+  geom_segment(data = events, mapping = aes(x = year, y = 0, xend = year, yend = focus,
+                                            color = general_type)) +
+  geom_point(data = events, mapping = aes(x = year, y = focus, color = general_type)) +
+  geom_label_repel(data = events, mapping = aes(label = type, x = year, y = focus),
+                   label.size = 0.1, size = 2, box.padding = 0.1, point.padding = 0.001) +
+  facet_grid(multi_line_loc ~ ., scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+### Plot 3
+
+```{r}
+############
+### plot ###
+############
+
+ggplot() +
+  scale_y_discrete() +
+  theme_linedraw() +
+  geom_segment(data = events, mapping = aes(x = year, y = 0, xend = year, yend = focus,
+                                            color = general_type)) +
+  geom_point(data = events, mapping = aes(x = year, y = focus, color = general_type)) +
+  geom_label_repel(data = events, mapping = aes(label = type, x = year, y = focus),
+                   label.size = 0.1, size = 2, box.padding = 0.1) +
+  facet_grid(multi_line_loc ~ ., scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+### Plot 4
+
+```{r}
+############
+### plot ###
+############
+library(ochRe)
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_ochre(palette="namatjira_qual") +
+  theme_minimal() +
+  geom_segment(data = events, mapping = aes(x = year, y = 0, xend = year, yend = focus,
+                                            color = general_type)) +
+  geom_point(data = events, mapping = aes(x = year, y = focus, color = general_type)) +
+  geom_label_repel(data = events, mapping = aes(label = type, x = year, y = focus),
+                   label.size = 0.1, size = 2, box.padding = 0.1) +
+  facet_grid(multi_line_loc ~ ., scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+
+## Plots Day 2
+
+*Figured out how to adjust height.* 
+
+Can set plot area height, width (dah). Still think you should be able to embed this in the code but after much googling seems to me this is impossible with facets and "free" scales, i.e. only including categories with data in each location.
+
+*Adding Emphasis on connected events*
+
+Can keep the basic labels from day one, or similar, and by adding a "groups" column choose one or more of these to emphasise with a more detailed label and bolder plotting. I've just chucked in couple for now. You could emphasise by whole "type" too.
+
+*Added jitter*
+
+*Reordered Focus Categories into Ecosystem and Species level*
+
+### Plot 5 
+
+   
+
+```{r, fig.width=8.25, fig.height=11.75}
+#############
+### Theme ###
+#############
+
+#choose a colour for the facet panels
+facet_clr <- ochRe::ochre_palettes$tasmania[7] #dark green
+
+theme_duncan <- function () {
+    theme_linedraw() %+replace% 
+    theme(
+      panel.grid.minor.x=element_blank(), 
+      panel.grid.major.x=element_blank(),
+      legend.position = "bottom", 
+      legend.title=element_blank(), 
+      axis.ticks.y = element_blank(), 
+      axis.title.x = element_blank(), 
+      strip.text.y = element_text(angle = 0),
+      strip.text = element_text(colour = "white"),
+      strip.background = element_rect(fill = facet_clr, colour = facet_clr),
+      panel.border = element_rect(fill = NA, colour = facet_clr) 
+      )
+}
+
+############
+### plot ###
+############
+
+
+groups_to_emphasise <- c("wnp kangaroo")
+
+events_grouped <- events %>%
+  mutate(groups = if_else(groups %in% groups_to_emphasise, groups, "ungrouped"),
+         focus = as_factor(focus), 
+         focus = fct_relevel(focus, "kangaroo", "buloke", "rabbit", "goat", "livestock",
+                             "SAW", "ecosystem"),
+         size = if_else(groups == "ungrouped", 1.5, 2), 
+         alpha = if_else(groups == "ungrouped", 0.5, 0.8),
+         plot_labels = if_else(groups == "ungrouped", type, event_name)) # %>%
+  # view()
+
+ggplot() +
+  scale_y_discrete() +
+  scale_color_brewer(palette = "Dark2") +
+  #scale_colour_viridis_d(option = "plasma", end = 0.8) +
+  theme_duncan() +
+  geom_segment(data = events_grouped, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = focus,
+                                            color = general_type), size = events_grouped$size * 0.8,
+               alpha = events_grouped$size - 1) +
+  geom_point(data = events_grouped, mapping = aes(x = year_jitter, y = focus, color = general_type),
+             size = events_grouped$size, alpha = events_grouped$size - 1) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = plot_labels, x = year_jitter, y = focus),
+                   label.size = 0.1 * events_grouped$size, box.padding = 0.1, size = events_grouped$size * 1.5,
+                   max.time = 1, max.iter = 50000, force = 2) +
+  facet_grid(multi_line_loc ~ ., scales = "free_y", space = "free") +
+  ylab(NULL)
+
+```
+
+
+### Theme creation
+
+Based on what you want generally, I'll create a custom theme.
+
+``` {r}
+#############
+### Theme ###
+#############
+
+#choose a colour for the facet panels
+facet_clr <- ochRe::ochre_palettes$tasmania[7] #dark green
+
+theme_duncan <- function () {
+    theme_linedraw() %+replace% 
+    theme(
+      panel.grid.minor.x=element_blank(), 
+      panel.grid.major.x=element_blank(),
+      legend.position = "bottom", 
+      legend.title=element_blank(), 
+      axis.ticks.y = element_blank(), 
+      axis.title.x = element_blank(), 
+      strip.text.y = element_text(angle = 0),
+      strip.text = element_text(colour = "white"),
+      strip.background = element_rect(fill = facet_clr, colour = facet_clr),
+      panel.border = element_rect(fill = NA, colour = facet_clr) 
+      )
+}
+```
+
+### Plot 6 
+
+Make kangaroo/rabbit population indices. 
+
+``` {r, fig.width=8.25, fig.height=11.75}
+
+############
+### plot ###
+############
+
+groups_to_emphasise <- c("wnp kangaroo")
+
+events_grouped <- events %>%
+  mutate(groups = if_else(groups %in% groups_to_emphasise, groups, "ungrouped"),
+         focus = as_factor(focus), 
+         focus = fct_relevel(focus, "kangaroo", "buloke", "rabbit", "goat", "livestock",
+                             "SAW", "ecosystem"),
+         #focus_numeric = as.numeric(focus),
+         size = if_else(groups == "ungrouped", 1.5, 2), 
+         alpha = if_else(groups == "ungrouped", 0.5, 0.8), 
+         plot_labels = if_else(groups == "ungrouped", type, event_name)) # %>%
+  # view()
+
+rabbits <- rabbits_df %>%
+  group_by(multi_line_loc) %>%
+  mutate(pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = ((pop_stand - 0.5)/2 + grep("rabbit", levels(events_grouped$focus))))
+
+roos <- roos_df %>%
+  group_by(multi_line_loc) %>%
+  mutate(pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = ((pop_stand - 0.5)/2 + grep("kangaroo", levels(events_grouped$focus))))
+
+ggplot() +
+  scale_y_discrete() +
+  scale_color_brewer(palette = "Dark2") +
+  theme_duncan() +
+  geom_segment(data = events_grouped, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = focus,
+                                            color = general_type), size = events_grouped$size * 0.8,
+               alpha = events_grouped$size - 1) +
+  geom_point(data = events_grouped, mapping = aes(x = year_jitter, y = focus, color = general_type),
+             size = events_grouped$size, alpha = events_grouped$size - 1) +
+  geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph), size = 0.5) +
+  geom_line(data = roos, mapping = aes(x = year, y = pop_graph), size = 0.5) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = plot_labels, x = year_jitter, y = focus),
+                   label.size = 0.1 * events_grouped$size, box.padding = 0.1, size = events_grouped$size * 1.5,
+                   max.time = 1, max.iter = 50000, force = 2) +
+  facet_grid(multi_line_loc ~ ., scales = "free_y", space = "free") +
+  ylab(NULL)
+
+```
+
+## Plots Day 3
+
+### Plot 7
+
+Facet by focus, with group emphasis
+
+```{r, fig.width=8.25, fig.height=11.75}
+
+############
+### plot ###
+############
+
+groups_to_emphasise <- c("wnp kangaroo")
+
+events_grouped <- events %>%
+  mutate(groups = if_else(groups %in% groups_to_emphasise, groups, "ungrouped"),
+         focus = as_factor(focus), 
+         focus = fct_relevel(focus, "kangaroo", "rabbit", "goat", "livestock",
+                             "buloke", "SAW", "ecosystem"),
+         #focus_numeric = as.numeric(focus),
+         size = if_else(groups == "ungrouped", 1.5, 2), 
+         alpha = if_else(groups == "ungrouped", 0.5, 0.8), 
+         plot_labels = if_else(groups == "ungrouped", type, event_name)) # %>%
+  # view()
+
+rabbits <- rabbits_df %>%
+  mutate(focus = "rabbit", 
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = (pop_stand - 0.5)/2 + as.numeric(as.factor(multi_line_loc))) %>%
+  group_by(multi_line_loc) %>%
+  view()
+
+roos <- roos_df %>%
+  mutate(focus = "kangaroo", 
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = (pop_stand - 0.5)/2 + as.numeric(as.factor(multi_line_loc))) %>%
+  group_by(multi_line_loc) %>%
+  view()
+
+clrs <- ochRe::ochre_palettes$parliament[1:6]
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_manual(values=clrs) +
+  theme_duncan() +
+  geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.5, colour = grey(0.8)) +
+  geom_line(data = roos, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.5, colour = grey(0.8)) +
+  geom_segment(data = events_grouped, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = multi_line_loc,
+                                            color = general_type), size = events_grouped$size * 0.8,
+               alpha = events_grouped$size - 0.8) +
+  geom_point(data = events_grouped, mapping = aes(x = year_jitter, y = multi_line_loc, color = general_type),
+             size = events_grouped$size, alpha = events_grouped$size - 1) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = plot_labels, x = year_jitter, y = multi_line_loc),
+                   label.size = 0.1 * events_grouped$size, box.padding = 0.1, size = events_grouped$size * 1.5,
+                   max.time = 1, max.iter = 50000, force = 2) +
+  facet_grid(focus ~ ., scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+Area available for labels has become too small
+
+### Plot 8
+
+Facet by focus, without group emphasis
+
+```{r, fig.width=8.25, fig.height=11.75}
+
+groups_to_emphasise <- c("wnp kangaroo")
+
+events <- events %>%
+  mutate(focus = as_factor(focus), 
+         focus = fct_relevel(focus, "kangaroo", "rabbit", "goat", "livestock",
+                             "buloke", "SAW", "ecosystem")) # %>%
+  # view()
+
+rabbits <- rabbits_df %>%
+  mutate(focus = "rabbit", 
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = (pop_stand - 0.5)/2 + as.numeric(as.factor(multi_line_loc))) %>%
+  group_by(multi_line_loc) %>%
+  view()
+
+roos <- roos_df %>%
+  mutate(focus = "kangaroo", 
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = (pop_stand - 0.5)/2 + as.numeric(as.factor(multi_line_loc))) %>%
+  group_by(multi_line_loc) %>%
+  view()
+
+clrs <- ochRe::ochre_palettes$tasmania[c(1:6,7)]
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_manual(values=clrs) +
+  theme_duncan() +
+  geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.5, colour = grey(0.8)) +
+  geom_line(data = roos, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.5, colour = grey(0.8)) +
+  geom_segment(data = events, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = multi_line_loc,
+                                            color = general_type)) +
+  geom_point(data = events, mapping = aes(x = year_jitter, y = multi_line_loc, color = general_type)) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = type, x = year_jitter, 
+                                                        y = multi_line_loc), 
+                   label.size = 0.1, size = 2, box.padding = 0.1, 
+                   max.time = 1, max.iter = 50000, force = 2) +
+  facet_grid(focus ~ ., scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+Still pretty crowded in "kangaroo"
+
+### Plot 9
+
+Label only some points. Just doing a couple of emphasis groups here. Made labels slightly transparent.
+
+```{r, fig.width=8.25, fig.height=11.75}
+
+############
+### plot ###
+############
+
+groups_to_emphasise <- c("wnp kangaroo", "mallee rabbit")
+unique(events$multi_line_loc)
+events_grouped <- events %>%
+  mutate(groups = if_else(groups %in% groups_to_emphasise, groups, "ungrouped"),
+         # re-level locations to appear in order corresponding to pop data
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld", "Mallee\nParks", "Global")),
+         # size of segments, points
+         size = if_else(groups == "ungrouped", 1.2, 1.5),
+         # transparency of segments, points
+         alpha = if_else(groups == "ungrouped", 0.6, 0.8), 
+         plot_labels = if_else(groups == "ungrouped", "", event_name)) # %>%
+  # view()
+
+rabbits <- rabbits_df %>%
+  mutate(focus = "rabbit", 
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld")),
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = (pop_stand - 0.5)/2 + as.numeric(multi_line_loc)) %>%
+  view()
+
+roos <- roos_df %>%
+  mutate(focus = "kangaroo", 
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld")),
+         # standardised pop size
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)), 
+         # shifted to sit at correct y-level, and shrunk so as to not bump into each other
+         pop_graph = (pop_stand - 0.5)/2 + as.numeric(multi_line_loc)) %>% 
+ view()
+
+clrs <- ochRe::ochre_palettes$tasmania[c(1:5,7)]
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_manual(values=clrs) +
+  theme_duncan() +
+  geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.3, linetype = "dotted") +
+  geom_line(data = roos, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.3, linetype = "dotted") +
+  geom_segment(data = events_grouped, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = multi_line_loc,
+                                            color = general_type), size = events_grouped$size * 0.7,
+               alpha = events_grouped$alpha) +
+  geom_point(data = events_grouped, mapping = aes(x = year_jitter, y = multi_line_loc, color = general_type),
+             size = events_grouped$size, alpha = events_grouped$alpha) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = plot_labels, x = year_jitter, 
+                                                        y = multi_line_loc),
+                   label.size = 0, label.padding = 0.05,
+                   size = events_grouped$size * 1.5, fill = alpha(c("white"), 0.7),
+                   max.time = 1, max.iter = 50000, force = 10) +
+  # re-order focus to how want it to appear in plot
+  facet_grid(factor(focus, levels = c("ecosystem", "SAW", "buloke", "livestock",
+                                      "goat", "rabbit", "kangaroo")) ~ ., 
+             scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+### Plot 10
+
+Label a few more points. 
+
+```{r, fig.width=8.25, fig.height=11.75}
+
+############
+### plot ###
+############
+
+groups_to_emphasise <- c("wnp kangaroo", "mallee rabbit")
+
+events_grouped <- events %>%
+  mutate(groups = if_else(groups %in% groups_to_emphasise, groups, "ungrouped"),
+    # re-level locations to appear in order corresponding to pop data
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld", "Mallee\nParks", "Global")),
+         # size of segments, points
+         size = if_else(groups == "ungrouped", 1.2, 1.5),
+         # transparency of segments, points
+         alpha = if_else(groups == "ungrouped", 0.6, 0.8), 
+         # basic labels for management and research, others unlabelled 
+         plot_labels = case_when(
+           groups == "ungrouped" & general_type == "management" ~ type, 
+           groups == "ungrouped" & general_type == "research" ~ type,
+           groups != "ungrouped" ~ event_name,
+           TRUE ~ ""))  %>%
+   view()
+
+rabbits <- rabbits_df %>%
+  mutate(focus = "rabbit", 
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld")),
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = (pop_stand - 0.5)/2 + as.numeric(multi_line_loc)) %>%
+  view()
+
+roos <- roos_df %>%
+  mutate(focus = "kangaroo", 
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld")),
+         # standardised pop size
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)), 
+         # shifted to sit at correct y-level, and shrunk so as to not bump into each other
+         pop_graph = (pop_stand - 0.5)/2 + as.numeric(multi_line_loc)) %>% 
+ view()
+
+clrs <- ochRe::ochre_palettes$tasmania[c(1:5,7)]
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_manual(values=clrs) +
+  theme_duncan() +
+  geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.3, linetype = "dotted") +
+  geom_line(data = roos, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.3, linetype = "dotted") +
+  geom_segment(data = events_grouped, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = multi_line_loc,
+                                            color = general_type), size = events_grouped$size * 0.7,
+               alpha = events_grouped$alpha) +
+  geom_point(data = events_grouped, mapping = aes(x = year_jitter, y = multi_line_loc, color = general_type),
+             size = events_grouped$size, alpha = events_grouped$alpha) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = plot_labels, x = year_jitter, 
+                                                        y = multi_line_loc),
+                   label.size = 0, label.padding = 0.05,
+                   size = events_grouped$size * 1.5, fill = alpha(c("white"), 0.7),
+                   max.time = 1, max.iter = 50000, force = 10) +
+  # re-order focus to how want it to appear in plot
+  facet_grid(factor(focus, levels = c("ecosystem", "SAW", "buloke", "livestock",
+                                      "goat", "rabbit", "kangaroo")) ~ ., 
+             scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+### Plot 11
+
+Add polygon to demarcate period. Roos, rabbits pop size less shrunk. Polygons don't have to be for each focus, and can be different years for each.
+
+```{r, fig.width=8.25, fig.height=11.75}
+
+############
+### plot ###
+############
+
+groups_to_emphasise <- c("wnp kangaroo", "mallee rabbit")
+
+events_grouped <- events %>%
+  mutate(groups = if_else(groups %in% groups_to_emphasise, groups, "ungrouped"),
+    # re-level locations to appear in order corresponding to pop data
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld", "Mallee\nParks", "Global")),
+         # size of segments, points
+         size = if_else(groups == "ungrouped", 1.2, 1.5),
+         # transparency of segments, points
+         alpha = if_else(groups == "ungrouped", 0.6, 0.8), 
+         # basic labels for management and research, others unlabelled 
+         plot_labels = case_when(
+           groups == "ungrouped" & general_type == "management" ~ type, 
+           groups == "ungrouped" & general_type == "research" ~ type,
+           groups != "ungrouped" ~ event_name,
+           TRUE ~ ""))  %>%
+   view()
+
+rabbits <- rabbits_df %>%
+  mutate(focus = "rabbit", 
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld")),
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+         pop_graph = (pop_stand - 0.5)/1.5 + as.numeric(multi_line_loc)) %>%
+  view()
+
+roos <- roos_df %>%
+  mutate(focus = "kangaroo", 
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld")),
+         # standardised pop size
+         pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)), 
+         # shifted to sit at correct y-level, and shrunk so as to not bump into each other
+         pop_graph = (pop_stand - 0.5)/1.5 + as.numeric(multi_line_loc)) %>% 
+ view()
+
+########################################
+### dummy data for period rectangles ###
+########################################
+
+# don't have to include every focus
+foci <- c("ecosystem", "SAW", "buloke", "livestock",
+                                      "goat", "rabbit", "kangaroo")
+# same period for each focus here, can make them different
+yr_start <- 2000
+yr_end <- 2010
+
+rects_df <- tibble(focus = foci, xmin = rep(yr_start, length(foci)), 
+                   xmax = rep(yr_end, length(foci)), ymin = rep(0, length(foci)), 
+                   ymax = rep(Inf,length(foci)))
+
+clrs <- ochRe::ochre_palettes$tasmania[c(1:5,7)]
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_manual(values=clrs) +
+  theme_duncan() +
+  geom_rect(data = rects_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "grey", alpha = 0.3) +
+  geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.3, linetype = "dotted") +
+  geom_line(data = roos, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+            size = 0.3, linetype = "dotted") +
+  geom_segment(data = events_grouped, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = multi_line_loc,
+                                            color = general_type), size = events_grouped$size * 0.7,
+               alpha = events_grouped$alpha) +
+  geom_point(data = events_grouped, mapping = aes(x = year_jitter, y = multi_line_loc, color = general_type),
+             size = events_grouped$size, alpha = events_grouped$alpha) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = plot_labels, x = year_jitter, 
+                                                        y = multi_line_loc),
+                   label.size = 0, label.padding = 0.05,
+                   size = events_grouped$size * 1.5, fill = alpha(c("white"), 0.7),
+                   max.time = 1, max.iter = 50000, force = 10) +
+  # re-order focus to how want it to appear in plot
+  facet_grid(factor(focus, levels = c("ecosystem", "SAW", "buloke", "livestock",
+                                      "goat", "rabbit", "kangaroo")) ~ ., 
+             scales = "free_y", space = "free") +
+  
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+## Final Plot
+
+### Plot 12
+
+```{r, fig.width=8.25, fig.height=11.75}
+
+############
+### plot ###
+############
+
+data <- read_csv("TGM events timeline - Sheet1 rjg.csv")
+
+##################
+### manipulate ###
+##################
+
+# make multi-line labels for facets, width is n characters
+events <- data %>%
+  mutate(multi_line_loc = stringr::str_wrap(location, width = 10),
+         event_name = stringr::str_wrap(event_name, width = 15),
+         focus_name = stringr::str_wrap(focus, width = 10),
+         general_type = textclean::mgsub(general_type, "administration", "policy"),
+         label_number = 1:nrow(.)
+  ) 
+
+events <- events %>%
+  mutate(groups = if_else(is.na(groups), "ungrouped", groups),
+         multi_line_loc = if_else(multi_line_loc == "Mallee\nParks", "All Parks", multi_line_loc)) %>%
+  group_by(year, location) %>%
+  mutate(year_jitter = year + (purrr::rdunif(n(), 5, -5) / 10) * (n() > 1),
+         event_name = if_else(is.na(event_name), "other", event_name),
+         general_type = if_else(is.na(general_type), "other", general_type),
+         type = if_else(is.na(type), "other", type))# %>%
+#  view()
+
+##################
+### Dummy Data ###
+##################
+
+# years <- min(events$year):max(events$year)
+# 
+# locations <- unique(events$multi_line_loc)
+# 
+# rabbits_df <- tibble(year = rep(years, 3),
+#                      pop_size = rpois(length(year), 100),
+#                      multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+#   view()
+# 
+# roos_df <- tibble(year = rep(years, 3),
+#                   pop_size = rpois(length(year), 50),
+#                   multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+#   view()
+
+####################################
+### assemble groups for emphasis ###
+####################################
+
+groups_to_emphasise <- c("wnp kangaroo", "mallee rabbit")
+emphasis <- c("H")
+pin_size_small <- 0.9
+pin_size_large <- 1.2
+more_transparent <- 0.8
+less_transparent <- 1
+
+events_grouped <- events %>%
+  mutate(groups = if_else(impact %in% emphasis, impact, "ungrouped"),
+         # re-level locations to appear in order corresponding to pop data
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld", "All Parks", "Global")),
+         # size of segments, points
+         size = if_else(groups == "ungrouped", pin_size_small, pin_size_large),
+         # transparency of segments, points
+         alpha = if_else(groups == "ungrouped", more_transparent, less_transparent), 
+         # basic labels for management and research, others unlabelled 
+         plot_labels = case_when(
+           #groups == "ungrouped" & general_type == "management" ~ type, 
+           #groups == "ungrouped" & general_type == "research" ~ type,
+           groups == "ungrouped" ~ as.character(label_number),
+           groups != "ungrouped" ~ event_name,
+           TRUE ~ ""))  #%>%
+#view()
+
+# rabbits <- rabbits_df %>%
+#   mutate(focus = "rabbit", 
+#          multi_line_loc = factor(multi_line_loc, 
+#                                  levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+#                                             "Wyperfeld")),
+#          pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+#          pop_graph = (pop_stand - 0.5)/1.5 + as.numeric(multi_line_loc)) %>%
+#   view()
+# 
+# roos <- roos_df %>%
+#   mutate(focus = "kangaroo", 
+#          multi_line_loc = factor(multi_line_loc, 
+#                                  levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+#                                             "Wyperfeld")),
+#          # standardised pop size
+#          pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)), 
+#          # shifted to sit at correct y-level, and shrunk so as to not bump into each other
+#          pop_graph = (pop_stand - 0.5)/1.5 + as.numeric(multi_line_loc)) %>% 
+#  view()
+
+##################################
+### data for period rectangles ###
+##################################
+
+
+
+# don't have to include every focus
+foci <- c("semi-arid\nwoodlands", "livestock",
+          "goat", "rabbit", "kangaroo")
+# same period for each focus here, can make them different
+yr_start <- 2000
+yr_end <- 2010
+
+rects_df <- tibble(focus_name = foci, 
+                   xmin = if_else(foci == "livestock", 1975, yr_start), 
+                   xmax = if_else(foci == "livestock", 1995, yr_end), 
+                   ymin = rep(0, length(foci)), 
+                   ymax = rep(Inf, length(foci)))
+
+clrs <- ochRe::ochre_palettes$tasmania
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_manual(values=clrs) +
+  theme_duncan() +
+  geom_rect(data = rects_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "grey", alpha = 0.3) +
+  # geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+  #           size = 0.3, linetype = "dotted") +
+  # geom_line(data = roos, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+  #           size = 0.3, linetype = "dotted") +
+  geom_segment(data = events_grouped, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = multi_line_loc,
+                                            color = general_type), size = events_grouped$size * 0.7,
+               alpha = events_grouped$alpha) +
+  geom_point(data = events_grouped, mapping = aes(x = year_jitter, y = multi_line_loc, color = general_type),
+              size = events_grouped$size, alpha = events_grouped$alpha) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = plot_labels, x = year_jitter, 
+                                                        y = multi_line_loc),
+                   label.size = 0, label.padding = 0.05,
+                   size = events_grouped$size * 1.7, fill = alpha(c("white"), 0.7),
+                   max.time = 1, max.iter = 50000, force = 10) +
+  # re-order focus to how want it to appear in plot
+  facet_grid(factor(focus_name, levels = c( "livestock", "semi-arid\nwoodlands",
+                                      "goat", "rabbit", "kangaroo")) ~ ., 
+             scales = "free_y", space = "free") +
+  
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+## Plot 13
+
+```{r plot 13, fig.width=8.25, fig.height=11.75}
+data <- read_csv("TGM events timeline - Sheet1 rjg.csv")
+
+##################
+### manipulate ###
+##################
+clrs <- ochRe::ochre_palettes$tasmania
+
+# make multi-line labels for facets, width is n characters
+events <- data %>%
+  mutate(multi_line_loc = stringr::str_wrap(location, width = 10),
+         event_name = stringr::str_wrap(event_name, width = 15),
+         focus_name = stringr::str_wrap(focus, width = 10),
+         general_type = textclean::mgsub(general_type, "administration", "policy"),
+         label_number = 1:nrow(.))
+
+events <- events %>%
+  mutate(groups = if_else(is.na(groups), "ungrouped", groups),
+         multi_line_loc = if_else(multi_line_loc == "Mallee\nParks", "All Parks", multi_line_loc)) %>%
+  group_by(year, location) %>%
+  mutate(year_jitter = year + (purrr::rdunif(n(), 5, -5) / 10) * (n() > 1),
+         event_name = if_else(is.na(event_name), "other", event_name),
+         general_type = if_else(is.na(general_type), "other", general_type),
+         type = if_else(is.na(type), "other", type))
+  
+events <- events %>%  
+  rowwise() %>%
+  mutate(colour = clrs[grep(general_type, unique(events$general_type))])# %>%
+#  view()
+
+##################
+### Dummy Data ###
+##################
+
+# years <- min(events$year):max(events$year)
+# 
+# locations <- unique(events$multi_line_loc)
+# 
+# rabbits_df <- tibble(year = rep(years, 3),
+#                      pop_size = rpois(length(year), 100),
+#                      multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+#   view()
+# 
+# roos_df <- tibble(year = rep(years, 3),
+#                   pop_size = rpois(length(year), 50),
+#                   multi_line_loc = rep(locations[c(1,3,4)], each = length(years))) %>%
+#   view()
+
+####################################
+### assemble groups for emphasis ###
+####################################
+
+groups_to_emphasise <- c("wnp kangaroo", "mallee rabbit")
+emphasis <- c("H")
+pin_size_small <- 0.9
+pin_size_large <- 1.2
+more_transparent <- 0.8
+less_transparent <- 1
+
+events_grouped <- events %>%
+  mutate(groups = if_else(impact %in% emphasis, impact, "ungrouped"),
+         # re-level locations to appear in order corresponding to pop data
+         multi_line_loc = factor(multi_line_loc, 
+                                 levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+                                            "Wyperfeld", "All Parks", "Global")),
+         # size of segments, points
+         size = if_else(groups == "ungrouped", pin_size_small, pin_size_large),
+         # transparency of segments, points
+         alpha = if_else(groups == "ungrouped", more_transparent, less_transparent), 
+         # basic labels for management and research, others unlabelled 
+         plot_labels = case_when(
+           #groups == "ungrouped" & general_type == "management" ~ type, 
+           #groups == "ungrouped" & general_type == "research" ~ type,
+           groups == "ungrouped" ~ as.character(label_number),
+           groups != "ungrouped" ~ event_name,
+           TRUE ~ ""))  #%>%
+#view()
+
+# rabbits <- rabbits_df %>%
+#   mutate(focus = "rabbit", 
+#          multi_line_loc = factor(multi_line_loc, 
+#                                  levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+#                                             "Wyperfeld")),
+#          pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)),
+#          pop_graph = (pop_stand - 0.5)/1.5 + as.numeric(multi_line_loc)) %>%
+#   view()
+# 
+# roos <- roos_df %>%
+#   mutate(focus = "kangaroo", 
+#          multi_line_loc = factor(multi_line_loc, 
+#                                  levels = c("Hattah-\nKulkyne", "Murray\nSunset",
+#                                             "Wyperfeld")),
+#          # standardised pop size
+#          pop_stand = (pop_size - min(pop_size))/(max(pop_size)-min(pop_size)), 
+#          # shifted to sit at correct y-level, and shrunk so as to not bump into each other
+#          pop_graph = (pop_stand - 0.5)/1.5 + as.numeric(multi_line_loc)) %>% 
+#  view()
+
+##################################
+### data for period rectangles ###
+##################################
+
+
+
+# don't have to include every focus
+foci <- c("semi-arid\nwoodlands", "livestock",
+          "goat", "rabbit", "kangaroo")
+# same period for each focus here, can make them different
+yr_start <- 2000
+yr_end <- 2010
+
+rects_df <- tibble(focus_name = foci, 
+                   xmin = if_else(foci == "livestock", 1975, yr_start), 
+                   xmax = if_else(foci == "livestock", 1995, yr_end), 
+                   ymin = rep(0, length(foci)), 
+                   ymax = rep(Inf, length(foci)))
+
+
+ggplot() +
+  scale_y_discrete() +
+  scale_colour_manual(values=clrs) +
+  theme_duncan() +
+  geom_rect(data = rects_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "grey", alpha = 0.3) +
+  # geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+  #           size = 0.3, linetype = "dotted") +
+  # geom_line(data = roos, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
+  #           size = 0.3, linetype = "dotted") +
+  geom_segment(data = events_grouped, mapping = aes(x = year_jitter, y = 0, xend = year_jitter, yend = multi_line_loc,
+                                                    color = general_type), size = events_grouped$size * 0.7,
+               alpha = events_grouped$alpha) +
+  geom_point(data = events_grouped, mapping = aes(x = year_jitter, y = multi_line_loc, color = general_type),
+             size = events_grouped$size, alpha = events_grouped$alpha) +
+  geom_rect(data = events_grouped, mapping = aes(xmin = year_jitter, 
+                                                 xmax = year_jitter + duration,
+                                                 ymin = as.numeric(multi_line_loc) - 0.05,
+                                                 ymax = as.numeric(multi_line_loc) + 0.05,
+                                                 fill = general_type),
+            alpha = 0.4) +
+  geom_label_repel(data = events_grouped, mapping = aes(label = plot_labels, x = year_jitter, 
+                                                        y = multi_line_loc),
+                   label.size = 0, label.padding = 0.05,
+                   size = events_grouped$size * 1.7, fill = alpha(c("white"), 0.7),
+                   max.time = 1, max.iter = 50000, force = 10) +
+  # re-order focus to how want it to appear in plot
+  facet_grid(factor(focus_name, levels = c( "livestock", "semi-arid\nwoodlands",
+                                            "goat", "rabbit", "kangaroo")) ~ ., 
+             scales = "free_y", space = "free") +
+  theme(panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank(),
+        legend.position = "bottom", legend.title=element_blank(), axis.ticks = element_blank(), 
+        axis.title.x = element_blank(), strip.text.y = element_text(angle = 0)) +
+  ylab(NULL)
+
+```
+
+
+
+
+## Aesthetics
+
+
+Rank by location and use numeric to stretch y-axis
+
+I've done very little to the defaults yet. Some ideas:
+
+-  flip the y-labelling
+-  add x-axis line
+-  add more x-axis ticks and/or labels
+-  colour labels rather than lines
