@@ -27,26 +27,25 @@ This work is intended for conservation managers, agencies who are tasked with th
 
 It may also be of interest to those who work in policy for invasive species and management of overabundant native herbivores.
  
+# Summary 
+What is information is required to support cost-effective management of wild herbivores?
+
 # Background
 This work grew out of our NESP1.2.2 investigation of persistent regeneration failure in the Endangered Buloke Woodlands of the Riverina and Murray-Darling Depression Bioregions.  Parks Victoria has been working to restore these semi-arid woodlands for half a century, primarily by management of vertebrate herbivores that limit recruitment and maintain the community in a degraded stable state [@murdoch2006, @cheal2011]. Management of the combined grazing pressure from livestock, rabbits, hares, goats, deer and the western grey kangaroo has been Parks Victoria's longest running management campaign anywhere  [@taylor2016].  We proposed to reflect on our buloke woodlands case study as one where managers have obtained at least an empirical foothold on their herbivore threat problem. What lessons might this case hold for the management response to the many other Threatened Ecological Communities for which one or more herbivore threats are recognised?  
 
 After habitat destruction -- the essential backdrop to the majority of threatened species' and ecological communities' status -- invasive pest species (herbivores and predators) are among the most pervasive threat to those species [@kearney2019] and communities [Olivares Rojas unpubl.]. They represent an enormous cost to the Australian economy in terms of damage to agricultural production, but also mitigation and population control itself [@mcleod2016]. In some circumstances - like the buloke woodlands - native herbivores can also be a large part of the herbivore threat.  Identification and justification of herbivore threats in Listings and Recovery Plans are essential steps to resource and direct threat mitigation efforts.  But what further evidence is required for management agencies to gain an empirical if not adaptive foothold in managing multiple herbivore threats to threatened species and ecological communities? 
 
-Clear management objectives with measurable targets are essential to evidence based native vegetation management and conservation [@salafsky2002, @duncan2008], and these must be developed in order for identification of cost-effective management. Management objectives should be defined with a range of stakeholder inputs, though ecological research and evidence may play a useful role in the development. For cost-effective herbivore management, objectives and linked targets need to be framed in such a way that those allocating management resources can estimate for a given species or ecological community what kind of intervention, and how much of it, is required to achieve the management objective [e.g., density impact functions @yokomizo2009, @norbury2015, effort-outcomes relationship @hone2017]. Globally, however, few such models have been developed to date [@norbury2015]. 
+A range of types of evidence could contribute to help conservation practitioners address fundamental questions about goal setting, smart targets, cost-effectiveness and continuous improvement [@cook2012, @salafsky2002, @salafsky2019].  Clear management objectives with measurable targets are essential to evidence based native vegetation management and conservation [@salafsky2002, @duncan2008], and these must be developed in order for identification of cost-effective management. Management objectives should be defined with a range of stakeholder inputs, though ecological research and evidence may play a useful role in the development. For cost-effective herbivore management, objectives and linked targets need to be framed in such a way that those allocating management resources can estimate for a given species or ecological community what kind of intervention, and how much of it, is required to achieve the management objective [e.g., density impact functions @yokomizo2009, @norbury2015, effort-outcomes relationship @hone2017]. Globally, however, few such models have been developed to date [@norbury2015]. 
 
-Here we examine the development of the knowledge base that informs herbivore management for semi-arid buloke woodlands, a nationally Endangered Ecological Community, and whose largest remnants are located in mallee national parks in Victoria. Managers and researchers have been striving to understand the dynamics of the threatening herbivore species and their impact on the TEC, and eager to understand whether their efforts to intervene in favour of buloke woodlands are effective. To help provide perspective on the research and other empirical imputs to these examples, we borrow from published typologies of evidence and its use in to conservation management [@cook2012, @salafsky2019]. 
+Here we examine the development of the knowledge base that informs herbivore management for semi-arid buloke woodlands, a nationally Endangered Ecological Community, and whose largest remnants are located in mallee national parks in Victoria. Managers and researchers have been striving to understand the dynamics of the threatening herbivore species and their impact on the TEC, and eager to understand whether their efforts to intervene in favour of buloke woodlands are effective. We evaluate the accumulated body of evidence and ask to what extent has the research, population monitoring, and other empirical inputs contributed to an understanding of density-impact relationships between vertebrate herbivores and the restoration objectives for buloke woodlands. 
 
-# Main aim of the research – Max 100 words
-We performed a review of empirical 'inputs' that had contributed to Parks Victoria gaining an empirical if not adaptive foothold in managing multiple herbivore threats to TECs. We looked 
-
-A range of types of evidence could contribute to help conservation practitioners address three fundamental questions [@salafsky2002]:
-(1) "What should our goals be and how do we measure progress in reaching them?", which is an accessible paraphrasing of the SMART target idea; (2) "How can we most effectively take action to achieve conservation?"; and (3) "How can we do conservation better?" 
+# Main aim of the research
+We performed a review of empirical 'inputs' that had contributed to Parks Victoria gaining an empirical if not adaptive foothold in managing multiple herbivore threats to buloke woodland TEC. To assist with categorising the inputs, we borrow from published typologies of evidence and its use in to conservation management [@cook2012, @salafsky2019]. 
 
 Our intention was to extract insights that may help managers efficiently chart a course towards the kind of knowledge basis they need to cost-effectively manage herbivore threats to conservation of threatened ecological communities. 
 
 ## What you did
-
-We reviewed history of the development of the evidence and knowledge base that supports herbivore management in our two case studies. Our scope included projects or processes that contributed to the development of objectives, and projects and processes that contributed to the managers getting a handle on herbivore population dynamics, and the relationship between those dynamics and the conservation objectives. 
+We reviewed history of the development of the evidence and knowledge base that supports herbivore management for the restoration of buloke woodland TEC. We sourced documents including peer-reviewed literature, published and unpublished reports, strategic and management documents. We consulted with people retaining institutional knowledge of key interventions, and other events that may have played important roles in the development of the evidence base. 
 
 We constructed a typology of evidence that joined and extended two existing approaches; Salafsky et al's [-@salafsky2019] typology of evidence used in conservation practice and Cook et al's [-@cook2012] Table 3 labels for types of evidence that NSW and Victorian protected area managers considered useful for making decisions about biodiversity management. We added categories for statement or restatement of objectives, where those processes did not correspond to published strategic document, and also interventions, which are a vital part of the accumulated evidence and experience.
 
@@ -56,13 +55,13 @@ tab1 <- read_csv("TGM events timeline.csv") |>
   mutate(dd_mashup = factor(dd_mashup,
                             levels = c("inventory", 
                                        "condition assessments",
-                                       "monitoring", 
+                                       "population monitoring", 
                                        "primary studies",
                                        "review/synth/dss",
                                        "principles/theory", 
                                        "objective setting",
                                        "management plan",
-                                       "legislation",
+                                       "governance",
                                        "intervention"),
                             ordered = TRUE)) |> 
   arrange(dd_mashup, cook2012table3) |> 
@@ -77,11 +76,6 @@ regulartable(tab1) %>%
   autofit()
 
 ```
-
-
-To do this we sourced published and unpublished documents, and consulted with people retaining institutional knowledge of other events that may have played important or catalytic roles.  
-
-The review was relatively comprehensive in the case of buloke woodlands, and we cross-checked the picture of development of herbivore management from the buloke woodlands with that of the grassy TECs in the ACT, where similar resources had been gathered together and reviewed previously (Mel Snape pers. comm **or coauthor would be better**)
 
 
 ```{r table of herbivores and frequency as threat}
@@ -183,11 +177,9 @@ theme_duncan <- function () {
 data <- read_csv("TGM events timeline.csv")
 ```
 
-### Buloke Woodlands of the Riverina and Murray-Darling Depression Bioregions
-
 We identified `r nrow(data)` documents, datasets or operations processes spanning the period 1970--2020. The table and timeline of elements (Fig. 1) are overwhelming, but that in itself is part of the result of our review. The road toward an evidence base for restoring the semi-arid woodlands has been long indeed, and a many people have been part of the journey.  
 
-```{r plot 13, fig.width=8.25, fig.height=11.75, fig.cap= "Figure 1 Development of knowledge for evidence based approach to managing herbivore impacts on endangered Buloke Woodlands in Victoria's mallee parks. Vertical pins indicate release dates of documents, or start dates of interventions. Ribbons indicate time periods, like annual herbivore population monitoring."}
+```{r plot 13, fig.width=8.25, fig.height=11.75, fig.cap= "Figure 1. Development of knowledge for evidence based approach to managing herbivore impacts on endangered Buloke Woodlands in Victoria's mallee parks. Pins indicate release dates of documents, or start dates of interventions. Ribbons indicate time periods, like annual herbivore population monitoring."}
 
 library(tidyverse)
 library(ggplot2)
@@ -195,7 +187,19 @@ library(ggrepel)
 
 
 data <- read_csv("TGM events timeline.csv") |> 
-  filter(focus != "goat")
+  filter(focus != "goat") |> 
+  mutate(dd_mashup = factor(dd_mashup, levels = c("governance", "inventory",
+                            "intervention", "objective setting",
+                            "management plan", "population monitoring",
+                            "condition assessments", "primary studies",
+                            "review/synth/dss", "principles/theory"),
+                            labels = c("governance", "inventory",
+                            "intervention", "objective def.n",
+                            "management plan", "pop.n monitoring",
+                            "cond.n assessments", "primary studies",
+                            "review/synth/dss", "principles/theory"),
+                            ordered = TRUE)
+  )
 
 # clrs <- ochRe::ochre_palettes$tasmania
 clrs <- ochRe::ochre_palettes$mccrea
@@ -244,9 +248,9 @@ events <- events %>%
 
 groups_to_emphasise <- c("wnp kangaroo", "mallee rabbit")
 emphasis <- c("H")
-pin_size_small <- 0.9
+pin_size_small <- 0.7
 pin_size_large <- 1.2
-more_transparent <- 0.8
+more_transparent <- 0.7
 less_transparent <- 1
 
 events_grouped <- events %>%
@@ -320,7 +324,8 @@ ggplot() +
   scale_y_discrete() +
   scale_colour_manual(values=clrs) +
   theme_duncan() +
-  geom_rect(data = rects_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+  geom_rect(data = rects_df, 
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
             fill = "grey", alpha = 0.3) +
   # geom_line(data = rabbits, mapping = aes(x = year, y = pop_graph, group = multi_line_loc), 
   #           size = 0.3, linetype = "dotted") +
@@ -329,7 +334,7 @@ ggplot() +
   geom_segment(data = events_grouped, 
                aes(x = year_jitter, y = 0, 
                    xend = year_jitter, yend = multi_line_loc,
-                   color = dd_mashup), size = events_grouped$size * 0.7,
+                   color = dd_mashup), size = events_grouped$size * 0.5,
                alpha = events_grouped$alpha) +
   geom_point(data = events_grouped, 
              aes(x = year_jitter, y = multi_line_loc, color = dd_mashup),
@@ -360,14 +365,26 @@ ggplot() +
 
 ```
 
-The threat that multiple herbivores posed to the restoration of semi-arid woodlands in Victoria was recognised by the Land Conservation Council (LCC) in their investigation of public land use in the Mallee region 1972--1977 [@lcc1977]. The LCC report recognised the deficiency in information base about the Mallee ecosystems, flora and fauna, and highlighted the complex problem of _combined_ grazing pressure from livestock, rabbits, hares goats and kangaroos and its impact on the degraded semi-arid woodlands in particular. 
+The threat that multiple herbivores posed to the restoration of semi-arid woodlands in Victoria was recognised by the Land Conservation Council (LCC) in their investigation of public land use in the Mallee region 1972--1977 [@lcc1977]. The LCC report recognised the deficiency in information base about the Mallee ecosystems, flora and fauna, and highlighted the complex problem that the _combined_ grazing pressure from livestock, rabbits, hares, goats and over-abundant kangaroos posed for the degraded semi-arid woodlands. 
 
 Surveys of rabbits at quarterly or higher frequency had already begun in 1970 at Pine Plains, Wyperfeld NP, though that activity was not motivated by semi-arid woodland restoration, but rather private land production interests [@shepherd1978]
 
-The LCC called for field studies, and their review of public land use a decade later [@lcc1989] was in a much better position to recommend the termination of livestock grazing leases. They argued, supported by field data and site visits,  that no constant livestock grazing pressure was compatible with the restoration objective. The cessation of livestock grazing rights obviated the need to develop a density or regime-impact understanding for livestock, but  many questions about density-impact story for the various unmanaged herbivores remained.  One herbivore threat down, five to go.
+The LCC called for field studies, and their review of public land use a decade later [@lcc1989] was in a much better position to recommend the termination of livestock grazing leases. They argued, supported by field data and site visits,  that no constant livestock grazing pressure was compatible with the restoration objective.  One herbivore threat down, five to go.
 
 ## Semi-arid woodlands
-Restoration objectives that could inform the impact side of a density-impact understanding were first 
+Restoration objectives that could inform the impact side of a density-impact understanding were first set out in 1990 with the release of the Restoring the Balance plan for Kangaroo Control, a package of plans including a kangaroo management plan and a vegetation management plan. 
+
+
+
+
+```{r bar graph of output types, fig.align='center', fig.cap= "Figure 2.  Summary of number of evidence inputs of different types according to primary focus."}
+filter(data, focus != "livestock" & focus != "goat") |> 
+ggplot(aes(x = dd_mashup)) +
+  geom_bar() +
+  facet_wrap(~focus) +
+  coord_flip() +
+  theme_duncan() 
+```
 
 
 
@@ -377,21 +394,16 @@ Estimation of rabbit densities via spotlight surveys commenced at Wyperfeld in 1
 
 Rabbit surveys stopped in the mid-1980s, but were restarted again as part of a national impact study after the Rabbit Haemoraghic Disease (RHD) was released onto the Australia mainland in late 1995 [@cooke2002].  This time, although RHD was maintaining rabbits in semi-arid areas at densities an order of magnitude lower than in the early 1970s, spotlight surveys were continued. Consequently, managers were able to detect and respond to an increase in rabbit densities in the 2000s [@murdoch2007, @sullivan2011].
 
-For all the rabbit survey and control effort undertaken in the Mallee parks, the understanding about density-impact relationships were extrapolated from a developing body of work undertaken in semi-arid woodland and coastal scrub sites in South Australia [@mutze2016, @bird2012]. 
-
+For all the rabbit survey and control effort undertaken in the Mallee parks, the understanding about density-impact relationships were largely extrapolated from a developing body of work undertaken in semi-arid woodland and coastal scrub sites in South Australia [@mutze2016, @bird2012]. 
 
 ## Western grey kangaroo
-
-
 
 Cost effectiveness studies of monitoring approaches [e.g., @moloney2014], but not so much of management options
 
 
-## Goat, Deer, rogue cattle
+## Goat, Deer
 
 
-
-The elements of a quantitative understanding of density of herbivores and their impact on the ecosystem begin in Wyperfeld central with 
 
 Some elements have been constant, others have waxed and waned. 
 
@@ -403,6 +415,13 @@ Vegetation condition monitoring began in Hattah-Kulkyne in 1980 and ran annually
 
 # What does this mean?
 
+Can look at results in naive sense - how is it that they do not have a handle on DIF with so much effort?
+
+sympathetic resource oriented view - areas added to NPs - known to be in a degraded state, with no additional budget. So lots of work needs to be done opporunistically - not recurrent funding. Student projects, national projects, periodic funding - not much support for a long campaign.
+
+Links to Wintle
+
+Although there is an important rsource limitation, but neither is there much evidence of hte progressive shaping of questions taht would lead to the establishment of DIFs.
 
 
 
@@ -423,6 +442,8 @@ With the destructive potential of European rabbit firmly established in the nati
 It is critical to take 
 Essential to have an evidence base
 
+The cessation of livestock grazing rights obviated the need to develop a livestock density or regime-impact understanding, but  many questions about density-impact story for the various unmanaged herbivores remained. 
+
 
 # Implications for target audience
 
@@ -441,12 +462,18 @@ Who are these findings most important to?
 
 
 # How can they be applied?
+With the benefit of hindsight it is possible to wonder if an overarching 
+
+Turning around to face the present and the future...what does this suggest that conservation managers now should do?
+
+Decision analysis - what information will allow manager to do something different?
 
 
 
 # Implications
 
 From recognition to cost-effective management of herbivore threats
+
   
 # Recommendations
 
